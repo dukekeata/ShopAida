@@ -127,12 +127,19 @@ app.use(cors({
 // Global rate limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'production' ? 500 : 1000,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path === '/health'
+  skip: (req) => {
+    // Skip rate limiting for health checks and static assets
+    const staticPaths = ['/health', '/style.css', '/script.js', '/cart.js', '/shared.js', '/products.json'];
+    if (staticPaths.includes(req.path)) return true;
+    if (req.path.startsWith('/images/') || req.path.startsWith('/category/') || req.path.startsWith('/product/')) return true;
+    return false;
+  }
 });
+
 
 app.use(globalLimiter);
 
