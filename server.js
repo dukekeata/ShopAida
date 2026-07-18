@@ -127,14 +127,15 @@ app.use(cors({
 // Global rate limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 500 : 1000,
+  max: 2000,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => {
-    // Skip rate limiting for health checks and static assets
-    const staticPaths = ['/health', '/style.css', '/script.js', '/cart.js', '/shared.js', '/products.json'];
-    if (staticPaths.includes(req.path)) return true;
+    // Skip rate limiting for static assets and all frontend HTML pages
+    if (req.path === '/health') return true;
+    if (req.path === '/' || req.path.endsWith('.html')) return true;
+    if (req.path.endsWith('.css') || req.path.endsWith('.js') || req.path.endsWith('.json')) return true;
     if (req.path.startsWith('/images/') || req.path.startsWith('/category/') || req.path.startsWith('/product/')) return true;
     return false;
   }
@@ -146,7 +147,7 @@ app.use(globalLimiter);
 // Stricter rate limiting for authentication endpoints
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 5 : 50, // Higher limit in development
+  max: process.env.NODE_ENV === 'production' ? 30 : 50, // Higher limit for testing
   skipSuccessfulRequests: true,
   message: JSON.stringify({ error: 'Too many login/register attempts, please try again later.' }),
   handler: (req, res) => {
