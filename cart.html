@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Your Cart - ShopAida</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="navbar-top">
+        <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span><div class="logo-tagline">Curated Elegance</div></div></div>
+        <nav class="navbar-links">
+          <a href="categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon"></i>Categories</a>
+          <a href="index.html" class="shop-link"><i class="fas fa-store nav-icon"></i>Shop</a>
+          <a href="cart.html"><i class="fas fa-shopping-cart nav-icon"></i>Cart</a>
+          <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon"></i>Profile</a>
+          <a href="#" id="auth-link" aria-label="Sign Out"><i class="fas fa-sign-in-alt nav-icon"></i><span id="auth-text">Login</span></a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main>
+    <div class="checkout-layout">
+      <!-- Left Column: Shipping & Payment -->
+      <div class="checkout-details-col">
+        <section id="payment" class="payment-section" style="display:none;">
+          <h2 class="checkout-heading">Shipping & Payment</h2>
+          <div id="checkoutStatus" class="checkout-status">Please enter your shipping details to enable the payment options.</div>
+      <form class="shipping-form" autocomplete="on">
+        <div class="shipping-form-grid">
+          <label class="shipping-field">First Name<input id="shipFirst" name="given-name" autocomplete="given-name" type="text" placeholder="First name" required /></label>
+          <label class="shipping-field">Last Name<input id="shipLast" name="family-name" autocomplete="family-name" type="text" placeholder="Last name" /></label>
+          <label class="shipping-field">Phone<input id="shipPhone" name="tel" autocomplete="tel" type="tel" placeholder="+1 (555) 123-4567" required /></label>
+          <label class="shipping-field">Street Address<input id="shipStreet" name="street-address" autocomplete="street-address" type="text" placeholder="Street address" required /></label>
+          <label class="shipping-field">City<input id="shipCity" name="address-level2" autocomplete="address-level2" type="text" placeholder="City" required /></label>
+          <label class="shipping-field">State<input id="shipState" name="address-level1" autocomplete="address-level1" type="text" placeholder="State / region" required /></label>
+          <label class="shipping-field">Country<input id="shipCountry" name="country-name" autocomplete="country-name" type="text" placeholder="Country" required /></label>
+          <label class="shipping-field">ZIP Code<input id="shipZip" name="postal-code" autocomplete="postal-code" type="text" placeholder="ZIP / postal code" required /></label>
+        </div>
+      </form>
+      <div id="payment-message" class="payment-message">Processing payment...</div>
+      <div class="payment-panel stripe-panel" style="margin-bottom: 24px;">
+        <div class="payment-title"><i class="fab fa-cc-stripe" style="color: #635bff; margin-right: 8px;"></i> Credit Card (Stripe)</div>
+        <div class="payment-subtitle">Secure encrypted checkout using Stripe Elements.</div>
+        <div class="stripe-form" style="margin-top: 16px;">
+          <div id="stripe-card-element" style="padding: 12px; border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 16px; background: white; box-shadow: inset 0 1px 3px rgba(0,0,0,0.06);"></div>
+          <button id="stripePayBtn" class="primary-btn" type="button" style="width: 100%; background: #635bff; font-weight: 600;">Pay with Stripe</button>
+        </div>
+        <div id="stripe-message" class="paystack-message" style="margin-top: 12px;"></div>
+      </div>
+      
+      <div class="payment-panel" style="margin-bottom: 24px;">
+        <div class="payment-title">Paystack (Cards, Bank Transfer, Debit)</div>
+        <div class="payment-subtitle">Supports Visa/Mastercard, bank transfer, and local debit.</div>
+        <button id="paystackBtn" class="primary-btn" type="button" style="margin-top: 16px;">Pay with Paystack</button>
+        <div id="paystack-message" class="paystack-message" style="margin-top: 12px;"></div>
+      </div>
+      
+      <!-- <div id="paypal-button-container" style="margin-bottom: 24px;"></div>
+      <p class="demo-note">(Demo: Use sandbox credentials; server must be running on port 3000)</p> -->
+        </section>
+      </div>
+
+      <!-- Right Column: Cart Summary -->
+      <div class="cart-summary-col">
+        <section class="cart-section">
+          <h2 class="checkout-heading">Order Summary</h2>
+          <div id="cart"></div>
+          <div id="total" class="cart-total"></div>
+          <button id="checkoutBtn"><i class="fas fa-lock checkout-icon"></i>Secure Checkout</button>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = localStorage.getItem('user');
+      const authText = document.getElementById('auth-text');
+      const authLink = document.getElementById('auth-link');
+      if (!user) {
+        window.location.href = 'login.html';
+      } else {
+        if (authText && authLink) {
+          authText.textContent = 'Sign Out';
+          authLink.onclick = function(e) {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+          };
+        }
+      }
+    });
+  </script>
+  <script>
+    // Paystack placeholders (fill in your keys)
+    window.PAYSTACK_PUBLIC_KEY = "";
+    window.PAYSTACK_CURRENCY = "NGN";
+    window.PAYSTACK_CALLBACK_URL = "";
+
+    // Stripe placeholder (Official Stripe test key)
+    window.STRIPE_PUBLIC_KEY = "pk_test_51TNg9qDh6rNujlqzn83ysbxYVAImgL4mMu1fNJeQSYoRIPta1u2dA4AhmOHgHUPUrObw1kuTCXQmVqAR7qO5IdWp00ZKEGf0R8";
+  </script>
+  <script src="shared.js"></script>
+  <script src="cart.js"></script>
+  <!-- Load Stripe SDK -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://js.paystack.co/v1/inline.js"></script>
+  <!-- <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script> -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="images/logo-mark.png" class="logo-mark" alt="ShopAida Logo" />
+        <h3 class="footer-brand-title">ShopAida</h3>
+        <p>Your premier destination for curated elegance in fragrances, body care, and hair essentials. We deliver luxury to your doorstep with every order.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="category/fragrances.html">Fragrances</a></li>
+          <li><a href="category/hairs.html">Hair Care</a></li>
+          <li><a href="category/body-care.html">Body Care</a></li>
+          <li><a href="index.html#products">New Arrivals</a></li>
+          <li><a href="#">Gift Collections</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-newsletter">
+        <h4>Stay in Touch</h4>
+        <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit">Join</button>
+        </form>
+        <div class="footer-payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,263 @@
+[
+  {
+    "id": 1,
+    "name": "Brazilian Body Wave",
+    "price": 60,
+    "image": "images/hairs/brazilian-body-wave.png",
+    "category": "Hairs",
+    "subcategory": "Bouncy wavy strands",
+    "description": "Brazilian Body Wave"
+  },
+  {
+    "id": 2,
+    "name": "Peruvian Straight",
+    "price": 65,
+    "image": "images/hairs/peruvian-straight.png",
+    "category": "Hairs",
+    "subcategory": "Bone straight strands",
+    "description": "Peruvian Straight"
+  },
+  {
+    "id": 3,
+    "name": "Malaysian Curly",
+    "price": 70,
+    "image": "images/hairs/malaysian-curly.png",
+    "category": "Hairs",
+    "subcategory": "Curly strands",
+    "description": "Malaysian Curly"
+  },
+  {
+    "id": 4,
+    "name": "Closure Wig",
+    "price": 120,
+    "image": "images/hairs/closure-wig.png",
+    "category": "Hairs",
+    "subcategory": "Closures",
+    "description": "Closure Wig"
+  },
+  {
+    "id": 5,
+    "name": "Deep Wave Bundle",
+    "price": 80,
+    "image": "images/hairs/deep-wave-bundle.png",
+    "category": "Hairs",
+    "subcategory": "Bouncy wavy strands",
+    "description": "Deep Wave Bundle"
+  },
+  {
+    "id": 6,
+    "name": "Kinky Straight",
+    "price": 75,
+    "image": "images/hairs/kinky-straight.png",
+    "category": "Hairs",
+    "subcategory": "Bone straight strands",
+    "description": "Kinky Straight"
+  },
+  {
+    "id": 7,
+    "name": "Lace Frontal",
+    "price": 110,
+    "image": "images/hairs/lace-frontal.png",
+    "category": "Hairs",
+    "subcategory": "Closures",
+    "description": "Lace Frontal"
+  },
+  {
+    "id": 8,
+    "name": "Afro Puff",
+    "price": 55,
+    "image": "images/hairs/afro-puff.png",
+    "category": "Hairs",
+    "subcategory": "Curly strands",
+    "description": "Afro Puff"
+  },
+  {
+    "id": 9,
+    "name": "Silk Straight",
+    "price": 90,
+    "image": "images/hairs/silk-straight.png",
+    "category": "Hairs",
+    "subcategory": "Bone straight strands",
+    "description": "Silk Straight"
+  },
+  {
+    "id": 10,
+    "name": "Water Wave",
+    "price": 85,
+    "image": "images/hairs/water-wave.png",
+    "category": "Hairs",
+    "subcategory": "Bouncy wavy strands",
+    "description": "Water Wave"
+  },
+  {
+    "id": 11,
+    "name": "Pixie Cut Wig",
+    "price": 95,
+    "image": "images/hairs/pixie-cut-wig.png",
+    "category": "Hairs",
+    "subcategory": "Closures",
+    "description": "Pixie Cut Wig"
+  },
+  {
+    "id": 12,
+    "name": "Loose Deep",
+    "price": 88,
+    "image": "images/hairs/loose-deep.png",
+    "category": "Hairs",
+    "subcategory": "Bouncy wavy strands",
+    "description": "Loose Deep"
+  },
+  {
+    "id": 13,
+    "name": "Perfume",
+    "price": 120,
+    "image": "images/fragrances/perfume-niche.png",
+    "category": "Fragrances",
+    "subcategory": "Perfumes — Niche",
+    "description": "Perfume — Niche"
+  },
+  {
+    "id": 14,
+    "name": "Perfume",
+    "price": 95,
+    "image": "images/fragrances/perfume-designers.png",
+    "category": "Fragrances",
+    "subcategory": "Perfumes — Designers",
+    "description": "Perfume — Designers"
+  },
+  {
+    "id": 15,
+    "name": "Perfume",
+    "price": 110,
+    "image": "images/fragrances/perfume-arabian.png",
+    "category": "Fragrances",
+    "subcategory": "Perfumes — Arabian",
+    "description": "Perfume — Arabian"
+  },
+  {
+    "id": 16,
+    "name": "Body Mist",
+    "price": 25,
+    "image": "images/fragrances/body-mist-victoria-s-secret.png",
+    "category": "Fragrances",
+    "subcategory": "Body mist — Victoria's Secret",
+    "description": "Body Mist — Victoria's Secret"
+  },
+  {
+    "id": 17,
+    "name": "Body Mist",
+    "price": 22,
+    "image": "images/fragrances/body-mist-bath-body.png",
+    "category": "Fragrances",
+    "subcategory": "Body mist — Bath & Body",
+    "description": "Body Mist — Bath & Body"
+  },
+  {
+    "id": 18,
+    "name": "Candle",
+    "price": 18,
+    "image": "images/fragrances/candle-single-wick.png",
+    "category": "Fragrances",
+    "subcategory": "Candles — Single wick",
+    "description": "Candle — Single Wick"
+  },
+  {
+    "id": 19,
+    "name": "Candle",
+    "price": 32,
+    "image": "images/fragrances/candle-3-wick.png",
+    "category": "Fragrances",
+    "subcategory": "Candles — 3 wick",
+    "description": "Candle — 3 Wick"
+  },
+  {
+    "id": 20,
+    "name": "Home Diffuser",
+    "price": 40,
+    "image": "images/fragrances/home-diffuser.png",
+    "category": "Fragrances",
+    "subcategory": "Diffusers",
+    "description": "Home Diffuser"
+  },
+  {
+    "id": 21,
+    "name": "Room Fragrance",
+    "price": 35,
+    "image": "images/fragrances/concentrated-room-fragrance.png",
+    "category": "Fragrances",
+    "subcategory": "Room fragrance",
+    "description": "Room Fragrance"
+  },
+  {
+    "id": 22,
+    "name": "Hand Soap",
+    "price": 8,
+    "image": "images/fragrances/hand-soap.png",
+    "category": "Fragrances",
+    "subcategory": "Hand soaps",
+    "description": "Hand Soap"
+  },
+  {
+    "id": 23,
+    "name": "Sanitizer",
+    "price": 6,
+    "image": "images/fragrances/sanitizer.png",
+    "category": "Fragrances",
+    "subcategory": "Sanitizers",
+    "description": "Sanitizer"
+  },
+  {
+    "id": 24,
+    "name": "Body Lotion",
+    "price": 20,
+    "image": "images/body-care/body-lotion-nourishing.png",
+    "category": "Body Care",
+    "subcategory": "Lotions",
+    "description": "Body Lotion — Nourishing"
+  },
+  {
+    "id": 25,
+    "name": "Body Oil",
+    "price": 18,
+    "image": "images/body-care/body-oil-hydrating.png",
+    "category": "Body Care",
+    "subcategory": "Oil",
+    "description": "Body Oil — Hydrating"
+  },
+  {
+    "id": 26,
+    "name": "Hair Food",
+    "price": 15,
+    "image": "images/hairs/hair-food-serum.png",
+    "category": "Hairs",
+    "subcategory": "Hair food/serum",
+    "description": "Hair Food — Growth Serum"
+  },
+  {
+    "id": 27,
+    "name": "Bone Straight Strands",
+    "price": 65,
+    "image": "images/hairs/bone-straight.png",
+    "category": "Hairs",
+    "subcategory": "Bone straight strands",
+    "description": "Bone Straight Strands — 10"
+  },
+  {
+    "id": 28,
+    "name": "Bouncy Wavy Strands",
+    "price": 68,
+    "image": "images/hairs/bouncy-wavy.png",
+    "category": "Hairs",
+    "subcategory": "Bouncy wavy strands",
+    "description": "Bouncy Wavy Strands — 10"
+  },
+  {
+    "id": 29,
+    "name": "Curly Strands",
+    "price": 70,
+    "image": "images/hairs/curly-strands.png",
+    "category": "Hairs",
+    "subcategory": "Curly strands",
+    "description": "Curly Strands — 10"
+  }
+]

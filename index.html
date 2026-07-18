@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopAida - Fragrances, Body Care & Hair</title>
+  <meta name="description" content="Shop premium fragrances, hair and body care at ShopAida. Trusted by thousands. Fast shipping. Satisfaction guaranteed.">
+  <meta name="keywords" content="fragrances, body care, hair, perfumes, candles, diffusers, ShopAida">
+  <meta name="author" content="ShopAida">
+  <meta property="og:title" content="ShopAida - Fragrances, Body Care & Hair" />
+  <meta property="og:description" content="Shop premium fragrances, body care and hair products at ShopAida." />
+  <meta property="og:image" content="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=900&q=80" />
+  <link rel="stylesheet" href="./style.css">
+  <link rel="icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header role="banner">
+    <div class="navbar" role="navigation" aria-label="Main Navigation">
+      <div class="navbar-top">
+        <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span><div class="logo-tagline">Curated Elegance</div></div></div>
+        <nav class="navbar-links">
+          <a href="#category-gallery" aria-label="Categories"><i class="fas fa-th-list nav-icon" aria-hidden="true"></i>Categories</a>
+          <a href="#products" class="shop-link" aria-label="Shop"><i class="fas fa-store nav-icon" aria-hidden="true"></i>Shop</a>
+          <a href="cart.html" aria-label="Cart"><i class="fas fa-shopping-cart nav-icon" aria-hidden="true"></i>Cart <span id="cart-summary"></span></a>
+          <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon" aria-hidden="true"></i>Profile</a>
+          <a href="#" id="auth-link" aria-label="Sign Out"><i class="fas fa-sign-in-alt nav-icon" aria-hidden="true"></i><span id="auth-text">Login</span></a>
+        </nav>
+      </div>
+      <form class="top-search" role="search" onsubmit="event.preventDefault(); document.getElementById('search-input').value = document.getElementById('global-search').value; document.getElementById('search-input').dispatchEvent(new Event('input'))">
+        <label for="category-select" class="search-label"><i class="fas fa-filter" aria-hidden="true"></i>Category</label>
+        <select id="category-select" class="category-select" aria-label="Filter by category">
+          <option value="">All Categories</option>
+        </select>
+        <div class="search-input-wrapper">
+          <i class="fas fa-search search-icon" aria-hidden="true"></i>
+          <input id="global-search" class="search-input" type="search" placeholder="Search fragrances, hair, body care..." aria-label="Search products" autocomplete="off">
+        </div>
+        <button class="search-btn" aria-label="Search"><i class="fas fa-arrow-right"></i></button>
+      </form>
+    </div>
+  </header>
+  <main>
+    <div id="carousel-debug" class="carousel-debug"> </div>
+    <section class="hero-grid" aria-label="Featured promotions">
+      <div class="hero-tile hero-tile-large" style="background-image:url('images/banners/hero-spring.png');">
+        <div class="hero-tile-content">
+          <span class="hero-pill">Spring collection</span>
+          <h1>Discover our dreamiest seasonal finds</h1>
+          <p>Curated fragrances, luxe body care, and gift-ready treasures in one beautifully styled edit.</p>
+          <a class="hero-cta" href="#category-gallery">Shop our favourites</a>
+        </div>
+      </div>
+      <div class="hero-tile hero-tile-small" style="background-image:url('images/banners/hero-new.png');">
+        <div class="hero-tile-content">
+          <div class="hero-tile-label">New arrivals</div>
+          <h3>Explore the latest luxury drops</h3>
+        </div>
+      </div>
+      <div class="hero-tile hero-tile-small" style="background-image:url('images/banners/hero-gift.png');">
+        <div class="hero-tile-content">
+          <div class="hero-tile-label">Gift edit</div>
+          <h3>Beautiful finds for every celebration</h3>
+        </div>
+      </div>
+    </section>
+    <section class="new-arrivals-section">
+      <div class="new-arrivals-header">
+        <div>
+          <h2>New arrivals</h2>
+          <p>Browse the freshest additions from our latest collection, powered by real product imagery.</p>
+        </div>
+        <span class="new-arrivals-badge">Just launched</span>
+      </div>
+      <div class="new-arrivals-grid" id="new-arrivals-grid" aria-label="New arrivals grid"></div>
+    </section>
+    <section class="category-gallery" aria-label="Shop by Category">
+      <h2 class="category-gallery-title">Discover our best of spring 2026</h2>
+      <div id="category-gallery" class="category-grid"></div>
+    </section>
+    <section class="trust-section">
+      <div class="trust-grid">
+        <div class="trust-card">
+          <i class="fas fa-crown trust-icon"></i>
+          <span class="trust-text">Premium, Curated Selection</span>
+        </div>
+        <div class="trust-card">
+          <i class="fas fa-truck trust-icon"></i>
+          <span class="trust-text">Express Worldwide Shipping</span>
+        </div>
+        <div class="trust-card">
+          <i class="fas fa-heart trust-icon"></i>
+          <span class="trust-text">100% Money-Back Guarantee</span>
+        </div>
+      </div>
+    </section>
+    <section class="testimonials-section">
+      <h2 class="testimonials-title">Loved by Our Community</h2>
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"The premium hair extensions are incredible quality—the best I've ever purchased. Worth every penny!"</p>
+          <div class="testimonial-author">- Jessica O.</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"I found my signature fragrance here! Their Arabian perfume collection is exceptional. Highly recommend!"</p>
+          <div class="testimonial-author">- Faith A.</div>
+        </div>
+        <div class="testimonial-card">
+          <p class="testimonial-quote">"ShopAida's body care products are my luxury daily essential. Beautiful quality and fast delivery!"</p>
+          <div class="testimonial-author">- Cynthia M.</div>
+        </div>
+      </div>
+    </section>
+    <section id="products" class="products-section home-products">
+      <h2 class="products-title">Curated Selection</h2>
+      <div class="product-controls">
+        <!-- Categories / segments -->
+        <div id="categories-container" class="categories-container">
+          <!-- Categories rendered dynamically by script.js -->
+        </div>
+        <label for="search-input" class="filter-group">
+          <i class="fas fa-search" aria-hidden="true"></i>
+          <input id="search-input" class="filter-input" type="search" placeholder="Search products" aria-label="Search products" />
+        </label>
+        <div class="filter-group">
+          <label for="price-min" class="filter-label">Min ₦</label>
+          <input id="price-min" class="filter-input filter-input--small" type="number" min="0" step="1" placeholder="0" aria-label="Minimum price" />
+          <label for="price-max" class="filter-label">Max ₦</label>
+          <input id="price-max" class="filter-input filter-input--small" type="number" min="0" step="1" placeholder="Any" aria-label="Maximum price" />
+        </div>
+        <label for="sort-select" class="filter-group">
+          <span class="filter-label">Sort</span>
+          <select id="sort-select" class="filter-select" aria-label="Sort products">
+            <option value="default">Featured</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+            <option value="name-asc">Name: A → Z</option>
+            <option value="name-desc">Name: Z → A</option>
+          </select>
+        </label>
+        <button id="reset-filters" class="filter-reset">Reset</button>
+      </div>
+      <div id="loading-spinner" class="loading-spinner" role="status" aria-live="polite" aria-atomic="true">
+        <div class="spinner loading-icon" aria-hidden="true"></div>
+        <span id="loading-message" class="visually-hidden">Loading products...</span>
+        <span class="loading-text" aria-hidden="true">Loading products...</span>
+      </div>
+      <div class="products-grid" id="products-grid" role="list" aria-label="Product List">
+        <!-- Products will be dynamically loaded here by script.js -->
+      </div>
+      <div id="cart-confirm" class="cart-confirm">Added to cart!</div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="images/logo-mark.png" class="logo-mark" alt="ShopAida Logo" />
+        <h3 class="footer-brand-title">ShopAida</h3>
+        <p>Your premier destination for curated elegance in fragrances, body care, and hair essentials. We deliver luxury to your doorstep with every order.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="category/fragrances.html">Fragrances</a></li>
+          <li><a href="category/hairs.html">Hair Care</a></li>
+          <li><a href="category/body-care.html">Body Care</a></li>
+          <li><a href="index.html#products">New Arrivals</a></li>
+          <li><a href="#">Gift Collections</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-newsletter">
+        <h4>Stay in Touch</h4>
+        <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit">Join</button>
+        </form>
+        <div class="footer-payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+  <script src="shared.js"></script>
+  <script>
+    // Configure auth link behavior; allow guest browsing
+    document.addEventListener('DOMContentLoaded', function() {
+      const user = localStorage.getItem('user');
+      const authText = document.getElementById('auth-text');
+      const authLink = document.getElementById('auth-link');
+      if (user) {
+        // Change Login to Sign Out
+        if (authText && authLink) {
+          authText.textContent = 'Sign Out';
+          authLink.onclick = function(e) {
+            e.preventDefault();
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+          };
+        }
+      } else {
+        // Guest browsing: keep Login link (no automatic redirect)
+        if (authText && authLink) {
+          authText.textContent = 'Login';
+          authLink.onclick = null;
+          authLink.href = 'login.html';
+        }
+      }
+    });
+  </script>
+  <script src="script.js"></script>
+  <!-- PayPal SDK for demo (client-id=sb for sandbox) -->
+  <!-- <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD"></script> -->
+</body>
+</html>

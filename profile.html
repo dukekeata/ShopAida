@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Account - ShopAida</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+</head>
+<body>
+  <header>
+    <div class="navbar" role="navigation" aria-label="Main Navigation">
+      <div class="navbar-top">
+        <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span><div class="logo-tagline">Curated Elegance</div></div></div>
+        <nav class="navbar-links">
+          <a href="categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon" aria-hidden="true"></i>Categories</a>
+          <a href="index.html" class="shop-link"><i class="fas fa-store nav-icon" aria-hidden="true"></i>Shop</a>
+          <a href="cart.html"><i class="fas fa-shopping-cart nav-icon" aria-hidden="true"></i>Cart</a>
+          <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon" aria-hidden="true"></i>Profile</a>
+          <a href="login.html" id="auth-link" aria-label="Sign In"><i class="fas fa-sign-in-alt nav-icon" aria-hidden="true"></i><span id="auth-text">Login</span></a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main class="profile-section">
+    <section class="account-card" aria-labelledby="account-heading">
+      <h1 id="account-heading">Account overview</h1>
+      <p id="account-summary" class="account-summary">Loading your profile...</p>
+      <div id="account-details" class="account-details"></div>
+    </section>
+
+    <section class="orders-card" aria-labelledby="orders-heading">
+      <div class="order-card-header">
+        <div>
+          <h2 id="orders-heading">Recent orders</h2>
+          <p class="subtext">Review your latest purchases and shipment details in one place.</p>
+        </div>
+      </div>
+      <div id="orders-list" class="orders-list"></div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="images/logo-mark.png" class="logo-mark" alt="ShopAida Logo" />
+        <h3 class="footer-brand-title">ShopAida</h3>
+        <p>Your premier destination for curated elegance in fragrances, body care, and hair essentials. We deliver luxury to your doorstep with every order.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="category/fragrances.html">Fragrances</a></li>
+          <li><a href="category/hairs.html">Hair Care</a></li>
+          <li><a href="category/body-care.html">Body Care</a></li>
+          <li><a href="index.html#products">New Arrivals</a></li>
+          <li><a href="#">Gift Collections</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-newsletter">
+        <h4>Stay in Touch</h4>
+        <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit">Join</button>
+        </form>
+        <div class="footer-payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+  <script src="shared.js"></script>
+  <script>
+    const API_BASE = window.ShopAida.API_BASE;
+
+    function renderOrderSummary(order) {
+      const lines = [];
+      if (Array.isArray(order.items)) {
+        lines.push('<ul class="order-items">');
+        order.items.forEach(item => {
+          lines.push(`<li>${item.name} ×${item.quantity} — ${window.ShopAida.formatCurrency(item.price)}</li>`);
+        });
+        lines.push('</ul>');
+      }
+      return lines.join('');
+    }
+
+    function renderOrderTimeline(order) {
+      if (!order.events || !order.events.length) return '';
+      
+      let html = '<div class="order-timeline-container">';
+      html += '<h4 class="timeline-title">Order Updates</h4>';
+      html += '<ul class="order-timeline">';
+      
+      order.events.forEach((event, index) => {
+        const isLast = index === order.events.length - 1;
+        html += `
+          <li class="timeline-event ${isLast ? 'active' : ''}">
+            <div class="timeline-marker"><i class="fas ${isLast ? 'fa-check-circle' : 'fa-circle'}"></i></div>
+            <div class="timeline-content">
+              <strong>${event.status}</strong>
+              <p>${event.message || ''}</p>
+              <span class="timeline-time">${new Date(event.timestamp).toLocaleString()}</span>
+            </div>
+          </li>
+        `;
+      });
+      
+      html += '</ul></div>';
+      return html;
+    }
+
+    function renderOrders(orders) {
+      const container = document.getElementById('orders-list');
+      if (!orders || !orders.length) {
+        container.innerHTML = '<div class="empty-state">No orders have been placed yet.</div>';
+        return;
+      }
+      container.innerHTML = '';
+      orders.forEach(order => {
+        const card = document.createElement('article');
+        card.className = 'order-card';
+        card.innerHTML = `
+          <header class="order-card-header">
+            <div><strong>Order #${order._id || order.id}</strong></div>
+            <div class="order-status ${order.status}">${order.status || 'pending'}</div>
+          </header>
+          <div class="order-meta">
+            <span>${new Date(order.createdAt).toLocaleString()}</span>
+            <span>${window.ShopAida.formatCurrency(order.totalAmount)}</span>
+          </div>
+          <div class="order-shipping">
+            <strong>Ship to:</strong> ${order.shippingAddress?.street || 'N/A'}, ${order.shippingAddress?.city || ''}, ${order.shippingAddress?.country || ''}
+          </div>
+          ${renderOrderSummary(order)}
+          ${renderOrderTimeline(order)}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/me`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...window.ShopAida.getAuthHeaders()
+          },
+          credentials: 'include'
+        });
+        if (!res.ok) throw new Error('Unable to load profile.');
+        const user = await res.json();
+        document.getElementById('account-summary').textContent = `Welcome back, ${user.firstName || user.email || 'valued customer'}!`;
+        document.getElementById('account-details').innerHTML = `
+          <div class="account-row"><strong>Email:</strong> ${user.email}</div>
+          <div class="account-row"><strong>Role:</strong> ${user.role || 'customer'}</div>
+          <div class="account-row"><strong>Joined:</strong> ${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</div>
+        `;
+      } catch (err) {
+        document.getElementById('account-summary').textContent = 'There was a problem loading your account details.';
+        document.getElementById('account-details').innerHTML = `<div class="error-text">${err.message}</div>`;
+      }
+    }
+
+    async function loadOrders() {
+      try {
+        const res = await fetch(`${API_BASE}/api/orders?limit=20`, {
+          headers: {
+            'Content-Type': 'application/json',
+            ...window.ShopAida.getAuthHeaders()
+          },
+          credentials: 'include'
+        });
+        if (!res.ok) {
+          const payload = await res.json().catch(() => ({}));
+          throw new Error(payload.error || 'Failed to load orders.');
+        }
+        const data = await res.json();
+        renderOrders(data.orders || []);
+      } catch (err) {
+        document.getElementById('orders-list').innerHTML = `<div class="error-text">${err.message}</div>`;
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (!window.ShopAida.requireLogin('profile.html')) return;
+      loadProfile();
+      loadOrders();
+    });
+  </script>
+</body>
+</html>

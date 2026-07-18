@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - ShopAida</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <div class="navbar">
+      <div class="navbar-top">
+        <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark"
+              alt="ShopAida mark" /></a>
+          <div><span class="brand">ShopAida</span>
+            <div class="logo-tagline">Curated Elegance</div>
+          </div>
+        </div>
+        <nav class="navbar-links">
+          <a href="categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon"></i>Categories</a>
+          <a href="index.html" class="shop-link"><i class="fas fa-store nav-icon"></i>Shop</a>
+          <a href="cart.html"><i class="fas fa-shopping-cart nav-icon"></i>Cart</a>
+          <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon"></i>Profile</a>
+          <a href="login.html" id="auth-link"><i class="fas fa-sign-in-alt nav-icon"></i><span
+              id="auth-text">Login</span></a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <script src="shared.js"></script>
+  <main>
+    <div class="login-page">
+      <div class="login-background-overlay"></div>
+
+      <section class="login-panel" aria-label="Login form">
+        <div class="login-header">
+          <img src="images/logo-mark.png" class="login-logo-mark" alt="ShopAida Logo" />
+          <h1 class="login-brand-title">ShopAida</h1>
+          <p class="login-tagline">Curated Elegance</p>
+        </div>
+
+        <div class="login-content">
+          <h2>Secure sign in</h2>
+          <p class="login-description">Welcome back! Access your curated collections and manage your orders with ease.
+          </p>
+
+          <div class="social-login">
+            <button type="button" class="social-btn google" id="googleSignIn"><i
+                class="fab fa-google"></i><span>Google</span></button>
+            <button type="button" class="social-btn facebook" id="facebookSignIn"><i
+                class="fab fa-facebook"></i><span>Facebook</span></button>
+            <button type="button" class="social-btn apple" id="appleSignIn"><i
+                class="fab fa-apple"></i><span>Apple</span></button>
+          </div>
+
+          <div class="dev-admin-credentials"
+            style="display:none;margin:18px 0 0;padding:14px 16px;border-radius:18px;background:rgba(11,135,147,0.08);color:#102a43;font-size:0.95rem;line-height:1.5;">
+            <strong></strong> <strong></strong>
+          </div>
+
+          <div class="divider">or sign in with email</div>
+          <form id="loginForm" autocomplete="off">
+            <div class="login-error" id="loginError">Invalid email or password.</div>
+            <div class="auth-field">
+              <label for="email">Email</label>
+              <div class="input-wrapper">
+                <i class="fas fa-envelope"></i>
+                <input type="email" id="email" name="email" placeholder="Enter your email address" required />
+              </div>
+            </div>
+            <div class="auth-field">
+              <label for="password">Password</label>
+              <div class="input-wrapper">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="password" name="password" placeholder="Password" required minlength="8" />
+              </div>
+            </div>
+            <button type="submit" class="login-submit-btn">Sign In</button>
+            <div class="login-links">
+              <span>New here? <a href="register.html">Create Account</a></span>
+              <a href="#" id="forgotPasswordLink">Forgot Password?</a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+  <div id="forgotPasswordModal" class="forgot-modal">
+    <div class="forgot-modal-card">
+      <h3 class="forgot-title">Reset Password</h3>
+      <div id="forgotError" class="forgot-error"></div>
+      <label for="forgotEmail" class="forgot-label">Email</label>
+      <input type="email" id="forgotEmail" class="forgot-input">
+      <label for="securityAnswer" class="forgot-label">What is your favorite color?</label>
+      <input type="text" id="securityAnswer" class="forgot-input">
+      <button id="resetPasswordBtn" class="forgot-btn">Reset Password</button>
+      <button id="closeForgotModal" class="forgot-cancel">Cancel</button>
+    </div>
+  </div>
+  <script>
+    // API Base URL
+    const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+
+    // Enhanced login validation
+    document.getElementById('loginForm').onsubmit = async function (e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('loginError');
+      const submitBtn = this.querySelector('button[type="submit"]');
+
+      errorDiv.style.display = 'none';
+
+      // Validation
+      if (!email) {
+        errorDiv.textContent = 'Email is required.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!email.match(/^([a-zA-Z0-9_\.-]+)@([a-zA-Z0-9\.-]+)\.([a-zA-Z]{2,})$/)) {
+        errorDiv.textContent = 'Please enter a valid email address.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!password) {
+        errorDiv.textContent = 'Password is required.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (password.length < 8) {
+        errorDiv.textContent = 'Password must be at least 8 characters.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // Show loading state
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Logging in...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password })
+        });
+
+        let data;
+        const contentType = res.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await res.json();
+        } else {
+          const text = await res.text();
+          data = { error: text || 'Login failed' };
+        }
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Login failed');
+        }
+
+        // Store token
+        localStorage.setItem('authToken', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+
+        // Redirect
+        const redirect = localStorage.getItem('afterLoginRedirect');
+        if (redirect) {
+          localStorage.removeItem('afterLoginRedirect');
+          window.location.href = redirect;
+        } else {
+          window.location.href = 'index.html';
+        }
+      } catch (err) {
+        errorDiv.textContent = err.message || 'Login failed. Please try again.';
+        errorDiv.style.display = 'block';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Login';
+      }
+    };
+
+    // Forgot Password Modal Logic
+    document.getElementById('forgotPasswordLink').onclick = function (e) {
+      e.preventDefault();
+      document.getElementById('forgotPasswordModal').style.display = 'flex';
+    };
+
+    // Social sign-in
+    const redirectUrl = `${window.location.origin}/auth-success.html`;
+
+    document.getElementById('googleSignIn').onclick = function () {
+      window.location.href = `${API_BASE}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
+    };
+
+    document.getElementById('facebookSignIn').onclick = function () {
+      window.location.href = `${API_BASE}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`;
+    };
+
+    document.getElementById('appleSignIn').onclick = function () {
+      alert('Apple sign-in is not connected yet.');
+    };
+
+    if (['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      const devNotice = document.querySelector('.dev-admin-credentials');
+      if (devNotice) devNotice.style.display = 'block';
+    }
+
+    document.getElementById('closeForgotModal').onclick = function () {
+      document.getElementById('forgotPasswordModal').style.display = 'none';
+      document.getElementById('forgotError').style.display = 'none';
+    };
+
+    document.getElementById('resetPasswordBtn').onclick = async function () {
+      const email = document.getElementById('forgotEmail').value.trim();
+      const errorDiv = document.getElementById('forgotError');
+      errorDiv.style.display = 'none';
+
+      if (!email) {
+        errorDiv.textContent = 'Please enter your email.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      if (!email.match(/^([a-zA-Z0-9_\.-]+)@([a-zA-Z0-9\.-]+)\.([a-zA-Z]{2,})$/)) {
+        errorDiv.textContent = 'Please enter a valid email address.';
+        errorDiv.style.display = 'block';
+        return;
+      }
+
+      // TODO: Implement password reset endpoint
+      errorDiv.style.color = '#888';
+      errorDiv.textContent = 'Password reset feature coming soon.';
+      errorDiv.style.display = 'block';
+    };
+  </script>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="images/logo-mark.png" class="logo-mark" alt="ShopAida Logo" />
+        <h3 class="footer-brand-title">ShopAida</h3>
+        <p>Your premier destination for curated elegance in fragrances, body care, and hair essentials. We deliver
+          luxury to your doorstep with every order.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+        </div>
+      </div>
+
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="category/fragrances.html">Fragrances</a></li>
+          <li><a href="category/hairs.html">Hair Care</a></li>
+          <li><a href="category/body-care.html">Body Care</a></li>
+          <li><a href="index.html#products">New Arrivals</a></li>
+          <li><a href="#">Gift Collections</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-column">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-newsletter">
+        <h4>Stay in Touch</h4>
+        <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit">Join</button>
+        </form>
+        <div class="footer-payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

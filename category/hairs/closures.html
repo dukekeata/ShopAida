@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Closures | ShopAida</title>
+  <meta name="description" content="Closures for seamless hairline finishes — lace frontals, lace closures and more. Shop high-quality closures at ShopAida." />
+  <meta name="keywords" content="hair closures, lace frontal, lace closure, ShopAida">
+  <link rel="canonical" href="https://example.com/category/hairs/closures.html">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">ShopAida</div>
+      <nav>
+        <a href="../../categories.html">Categories</a>
+        <a href="../../index.html">Shop</a>
+      </nav>
+    </div>
+  </header>
+  <main style="max-width:1000px;margin:48px auto;">
+    <h1 style="color:var(--primary);">Closures</h1>
+    <p style="color:#555;font-size:1rem;">Closures and frontals for natural-looking hairline finishes and styling flexibility.</p>
+    <section id="products-grid" class="products-grid" style="margin-top:24px;"></section>
+  </main>
+  <footer class="footer-content">&copy; 2026 ShopAida</footer>
+  <script src="../../script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('../../products.json');
+        const list = await res.json();
+        const filtered = list.filter(p => p.subcategory === 'Closures');
+        renderCategoryProducts(filtered);
+      } catch (e) {
+        document.getElementById('products-grid').innerHTML = '<div style="color:#e53935;font-weight:600;text-align:center;padding:32px;">Failed to load products.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

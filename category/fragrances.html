@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Fragrances - ShopAida</title>
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo"><a href="../index.html" class="logo-link"><img src="../images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span></div></div>
+      <nav>
+        <a href="../categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon"></i>Categories</a>
+        <a href="../index.html" class="shop-link"><i class="fas fa-store nav-icon"></i>Shop</a>
+        <a href="../cart.html"><i class="fas fa-shopping-cart nav-icon"></i>Cart</a>
+        <a href="../login.html"><i class="fas fa-sign-in-alt nav-icon"></i>Login</a>
+      </nav>
+    </div>
+  </header>
+  <main>
+    <section class="category-page-section">
+      <h1 class="category-page-title">Fragrances</h1>
+      <p class="category-page-subtitle">Perfumes, body mists, candles, diffusers and more.</p>
+      <div class="subcategory-filters" id="subcategory-filters">
+        <!-- Subcategory buttons will be added by JavaScript -->
+      </div>
+      <div id="products-grid" class="products-grid" data-custom-render="true"></div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-brand">
+        <img src="../images/logo-mark.png" class="logo-mark" alt="ShopAida Logo" />
+        <h3 class="footer-brand-title">ShopAida</h3>
+        <p>Your premier destination for curated elegance in fragrances, body care, and hair essentials. We deliver luxury to your doorstep with every order.</p>
+        <div class="footer-social">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest"><i class="fab fa-pinterest-p"></i></a>
+        </div>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="fragrances.html">Fragrances</a></li>
+          <li><a href="hairs.html">Hair Care</a></li>
+          <li><a href="body-care.html">Body Care</a></li>
+          <li><a href="../index.html#products">New Arrivals</a></li>
+          <li><a href="#">Gift Collections</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-column">
+        <h4>Customer Care</h4>
+        <ul>
+          <li><a href="#">Track Order</a></li>
+          <li><a href="#">Shipping Policy</a></li>
+          <li><a href="#">Returns & Exchanges</a></li>
+          <li><a href="#">FAQs</a></li>
+          <li><a href="#">Contact Us</a></li>
+        </ul>
+      </div>
+      
+      <div class="footer-newsletter">
+        <h4>Stay in Touch</h4>
+        <p>Subscribe to receive updates, access to exclusive deals, and more.</p>
+        <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thank you for subscribing!');">
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit">Join</button>
+        </form>
+        <div class="footer-payment-icons">
+          <i class="fab fa-cc-visa"></i>
+          <i class="fab fa-cc-mastercard"></i>
+          <i class="fab fa-cc-paypal"></i>
+          <i class="fab fa-cc-apple-pay"></i>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</p>
+      <div class="footer-bottom-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Cookie Settings</a>
+      </div>
+    </div>
+  </footer>
+  <script src="../shared.js"></script>
+  <script src="../script.js"></script>
+  <script>
+    let allFragrances = [];
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const apiBase = window.ShopAida ? window.ShopAida.API_BASE : '';
+        const res = await fetch(`${apiBase}/api/products?limit=100`);
+        let data = await res.json();
+        let list = Array.isArray(data) ? data : (data.products || []);
+        list = list.map(p => ({...p, id: (p.metadata && p.metadata.originalId) ? p.metadata.originalId : (p._id || p.id), image: (p.images && p.images.length ? p.images[0] : (p.image || '')), subcategory: p.subcategory || (p.tags && p.tags.length ? p.tags[0] : null) }));
+        allFragrances = list.filter(p => p.category === 'Fragrances');
+        
+        // Wait briefly for script.js loadProducts to finish its DOM manipulation, then render
+        setTimeout(() => {
+          renderCategoryProducts(allFragrances);
+          renderSubcategoryFilters(allFragrances);
+        }, 50);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('products-grid').innerHTML = '<div class="load-error load-error--padded">Failed to load products.</div>';
+      }
+    });
+    
+    function renderSubcategoryFilters(products) {
+      const filterContainer = document.getElementById('subcategory-filters');
+      if (!filterContainer) return;
+      
+      // Get unique subcategories
+      const subcats = new Set();
+      products.forEach(p => {
+        if (p.subcategory) subcats.add(p.subcategory);
+      });
+      
+      // Add "All" button
+      const allBtn = document.createElement('button');
+      allBtn.textContent = 'All';
+      allBtn.className = 'subcat-btn active';
+      allBtn.onclick = () => {
+        document.querySelectorAll('.subcat-btn').forEach(b => b.classList.remove('active'));
+        allBtn.classList.add('active');
+        renderCategoryProducts(allFragrances);
+      };
+      filterContainer.appendChild(allBtn);
+      
+      // Add subcategory buttons
+      Array.from(subcats).sort().forEach(subcat => {
+        const btn = document.createElement('button');
+        btn.textContent = subcat;
+        btn.className = 'subcat-btn';
+        btn.onclick = () => {
+          document.querySelectorAll('.subcat-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const filtered = allFragrances.filter(p => p.subcategory === subcat);
+          renderCategoryProducts(filtered);
+        };
+        filterContainer.appendChild(btn);
+      });
+    }
+  </script>
+</body>
+</html>

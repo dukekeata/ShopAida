@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Perfumes — Arabian | ShopAida</title>
+  <meta name="description" content="Discover Arabian perfumes at ShopAida — rich oriental fragrances known for deep oud, amber and long-lasting impressions." />
+  <meta name="keywords" content="Arabian perfumes, oriental fragrances, oud, ShopAida">
+  <link rel="canonical" href="https://example.com/category/fragrances/perfumes-arabian.html">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">ShopAida</div>
+      <nav>
+        <a href="../../categories.html">Categories</a>
+        <a href="../../index.html">Shop</a>
+      </nav>
+    </div>
+  </header>
+  <main style="max-width:1000px;margin:48px auto;">
+    <h1 style="color:var(--primary);">Perfumes — Arabian</h1>
+    <p style="color:#555;font-size:1rem;">Explore rich Arabian and oriental-style perfumes featuring oud, amber and heady spices — crafted for long-lasting wear.</p>
+    <section id="products-grid" class="products-grid" style="margin-top:24px;"></section>
+  </main>
+  <footer class="footer-content">&copy; 2026 ShopAida</footer>
+  <script src="../../script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('../../products.json');
+        const list = await res.json();
+        const filtered = list.filter(p => p.subcategory === 'Perfumes — Arabian');
+        renderCategoryProducts(filtered);
+      } catch (e) {
+        document.getElementById('products-grid').innerHTML = '<div style="color:#e53935;font-weight:600;text-align:center;padding:32px;">Failed to load products.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

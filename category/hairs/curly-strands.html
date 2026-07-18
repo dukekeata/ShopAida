@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Curly Strands | ShopAida</title>
+  <meta name="description" content="Curly hair strands for natural bounce and texture. Choose from different curl patterns and densities at ShopAida." />
+  <meta name="keywords" content="curly hair, curly bundles, ShopAida">
+  <link rel="canonical" href="https://example.com/category/hairs/curly-strands.html">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">ShopAida</div>
+      <nav>
+        <a href="../../categories.html">Categories</a>
+        <a href="../../index.html">Shop</a>
+      </nav>
+    </div>
+  </header>
+  <main style="max-width:1000px;margin:48px auto;">
+    <h1 style="color:var(--primary);">Curly Strands</h1>
+    <p style="color:#555;font-size:1rem;">Natural curly textures with volume and definition — ideal for textured styles and volume-focused looks.</p>
+    <section id="products-grid" class="products-grid" style="margin-top:24px;"></section>
+  </main>
+  <footer class="footer-content">&copy; 2026 ShopAida</footer>
+  <script src="../../script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('../../products.json');
+        const list = await res.json();
+        const filtered = list.filter(p => p.subcategory === 'Curly strands');
+        renderCategoryProducts(filtered);
+      } catch (e) {
+        document.getElementById('products-grid').innerHTML = '<div style="color:#e53935;font-weight:600;text-align:center;padding:32px;">Failed to load products.</div>';
+      }
+    });
+  </script>
+</body>
+</html>

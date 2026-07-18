@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Complete - ShopAida</title>
+  <meta name="description" content="Your ShopAida order has been completed successfully." />
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="navbar-top">
+        <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span><div class="logo-tagline">Curated Elegance</div></div></div>
+        <nav class="navbar-links">
+          <a href="categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon" aria-hidden="true"></i>Categories</a>
+          <a href="index.html" class="shop-link"><i class="fas fa-store nav-icon" aria-hidden="true"></i>Shop</a>
+          <a href="cart.html"><i class="fas fa-shopping-cart nav-icon" aria-hidden="true"></i>Cart</a>
+          <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon" aria-hidden="true"></i>Profile</a>
+          <a href="login.html" id="auth-link" aria-label="Sign In"><i class="fas fa-sign-in-alt nav-icon" aria-hidden="true"></i><span id="auth-text">Login</span></a>
+        </nav>
+      </div>
+    </div>
+  </header>
+  <main class="success-section">
+    <section class="success-card">
+      <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+      <h1>Order Confirmed</h1>
+      <p id="success-message">Thank you! Your payment was successful and your order is being prepared.</p>
+      <p id="order-reference" class="order-reference"></p>
+      <div class="success-actions">
+        <a href="index.html" class="primary-btn">Continue Shopping</a>
+        <a href="profile.html" class="secondary-btn">View Your Orders</a>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <div class="footer-content">
+      <div>
+        <strong>Contact:</strong> info@shopaida.com | +358 41 7224702
+      </div>
+      <div>
+        <a href="#">About Us</a> | <a href="#">FAQ</a> | <a href="#">Contact</a>
+      </div>
+      <div class="footer-copy">&copy; 2026 ShopAida. All rights reserved.</div>
+    </div>
+  </footer>
+  <script src="shared.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const orderId = params.get('orderId');
+      const amount = params.get('amount');
+      const status = params.get('status');
+      const orderReference = params.get('reference');
+
+      const orderRefEl = document.getElementById('order-reference');
+      const successMessageEl = document.getElementById('success-message');
+
+      if (amount) {
+        successMessageEl.textContent = `Your payment of ${window.ShopAida.formatCurrency(Number(amount))} was processed successfully.`;
+      }
+      if (status) {
+        successMessageEl.textContent += ` Order status: ${status}.`;
+      }
+      if (orderReference) {
+        orderRefEl.textContent = `Reference: ${orderReference}`;
+      }
+      if (orderId) {
+        const apiUrl = `${window.ShopAida.API_BASE}/api/orders/${orderId}`;
+        try {
+          const res = await fetch(apiUrl, {
+            headers: {
+              'Content-Type': 'application/json',
+              ...window.ShopAida.getAuthHeaders()
+            },
+            credentials: 'include'
+          });
+          if (!res.ok) throw new Error('Unable to retrieve order details.');
+          const order = await res.json();
+          orderRefEl.innerHTML = `Order ID: <strong>${order._id || order.id}</strong> — ${window.ShopAida.formatCurrency(order.totalAmount)}`;
+        } catch (err) {
+          if (!orderRefEl.textContent) {
+            orderRefEl.textContent = `Order ID: ${orderId}`;
+          }
+        }
+      } else {
+        orderRefEl.textContent = orderReference ? `Reference: ${orderReference}` : 'Order details are available in your profile.';
+      }
+    });
+  </script>
+</body>
+</html>

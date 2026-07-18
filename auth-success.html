@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authentication Success - ShopAida</title>
+  <link rel="stylesheet" href="./style.css">
+  
+</head>
+<body class="auth-success-body">
+  <div class="auth-success-container">
+    <div class="spinner"></div>
+    <div class="message">Completing your login...</div>
+    <p style="color: var(--muted); font-size: 0.9rem;">You will be redirected shortly.</p>
+  </div>
+
+  <script>
+    // Extract token from URL params
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+    const provider = params.get('provider');
+    const error = params.get('error');
+
+    if (error) {
+      // Handle OAuth error
+      console.error('OAuth error:', error);
+      document.querySelector('.message').textContent = 'Authentication failed. Redirecting...';
+      setTimeout(() => {
+        window.location.href = 'login.html?error=' + encodeURIComponent(error);
+      }, 2000);
+    } else if (token && provider) {
+      // Store token
+      localStorage.setItem('authToken', token);
+      
+      // Fetch user info
+      const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+      
+      fetch(`${API_BASE}/api/auth/me`, {
+        headers: { 'Authorization': `Bearer ${token}` },
+        credentials: 'include'
+      })
+        .then(res => res.json())
+        .then(user => {
+          localStorage.setItem('user', JSON.stringify(user));
+          
+          // Redirect
+          const redirect = localStorage.getItem('afterLoginRedirect') || 'index.html';
+          localStorage.removeItem('afterLoginRedirect');
+          window.location.href = redirect;
+        })
+        .catch(err => {
+          console.error('Failed to fetch user:', err);
+          document.querySelector('.message').textContent = 'Failed to load user. Redirecting...';
+          setTimeout(() => {
+            window.location.href = 'index.html';
+          }, 2000);
+        });
+    } else {
+      // No token found
+      console.error('No authentication token found');
+      document.querySelector('.message').textContent = 'Authentication failed. Redirecting...';
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

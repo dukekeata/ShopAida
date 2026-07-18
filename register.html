@@ -1,0 +1,206 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - ShopAida</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+      </head>
+      <body>
+        <header>
+          <div class="navbar">
+            <div class="navbar-top">
+              <div class="logo"><a href="/index.html" class="logo-link"><img src="images/logo-mark.png" class="logo-mark" alt="ShopAida mark" /></a> <div><span class="brand">ShopAida</span><div class="logo-tagline">Curated Elegance</div></div></div>
+              <nav class="navbar-links">
+                <a href="categories.html" aria-label="Categories"><i class="fas fa-th-list nav-icon"></i>Categories</a>
+                <a href="index.html" class="shop-link"><i class="fas fa-store nav-icon"></i>Shop</a>
+                <a href="cart.html"><i class="fas fa-shopping-cart nav-icon"></i>Cart</a>
+                <a href="profile.html" id="profile-link" style="display:none;"><i class="fas fa-user nav-icon"></i>Profile</a>
+                <a href="login.html" id="auth-link"><i class="fas fa-sign-in-alt nav-icon"></i><span id="auth-text">Login</span></a>
+              </nav>
+            </div>
+          </div>
+        </header>
+        <script src="shared.js"></script>
+        <main>
+          <div class="register-page">
+            <section class="register-hero" aria-label="Create account overview">
+              <div class="hero-copy">
+                <span class="hero-pill">Join the ShopAida family</span>
+                <h1>Create your account and start shopping smarter.</h1>
+                <p>Enjoy a secure onboarding experience, access personalized product recommendations, and save your preferences for faster checkout next time.</p>
+                <div class="hero-highlights">
+                  <div class="hero-pill">Fast signup</div>
+                  <div class="hero-pill">Secure accounts</div>
+                  <div class="hero-pill">Curated catalog</div>
+                </div>
+              </div>
+              <div class="hero-img-wrapper" aria-hidden="true">
+                <img src="https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=900&q=80" alt="Luxurious skincare and body care products" class="auth-hero-image" />
+              </div>
+            </section>
+
+            <section class="register-panel" aria-label="Registration form">
+              <h2>Create your account</h2>
+              <p>Enter your details below to join ShopAida with secure access and a personalized shopping experience.</p>
+
+              <form id="registerForm" autocomplete="off">
+                <div class="register-error" id="registerError">Registration error.</div>
+                <div class="auth-field">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" placeholder="Email" required />
+                </div>
+                <div class="auth-field">
+                  <label for="password">Password</label>
+                  <input type="password" id="password" name="password" placeholder="Password" required minlength="8" />
+                  <small style="display:block;margin-top:4px;color:#64748b;font-size:0.85em;">
+                    Must be 8+ characters with uppercase, lowercase, number, and special character (@$!%*?&)
+                  </small>
+                </div>
+                <button type="submit">Register</button>
+                <div class="register-links">
+                  <a href="login.html">Already have an account?</a>
+                </div>
+              </form>
+            </section>
+
+          </div>
+          
+          <section class="register-products-section">
+            <h2 class="register-products-title">Explore Our Products</h2>
+            <div id="products-grid" class="products-grid register-products-grid"></div>
+          </section>
+        <script>
+          // API Base URL
+          const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+
+          // Registration logic
+          document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('registerForm').onsubmit = async function(e) {
+              e.preventDefault();
+              const email = document.getElementById('email').value.trim();
+              const password = document.getElementById('password').value;
+              const errorDiv = document.getElementById('registerError');
+              const submitBtn = this.querySelector('button[type="submit"]');
+              
+              errorDiv.style.display = 'none';
+              
+              // Validation
+              if (!email) {
+                errorDiv.textContent = 'Email is required.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!email.match(/^([a-zA-Z0-9_\.-]+)@([a-zA-Z0-9\.-]+)\.([a-zA-Z]{2,})$/)) {
+                errorDiv.textContent = 'Please enter a valid email address.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!password) {
+                errorDiv.textContent = 'Password is required.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (password.length < 8) {
+                errorDiv.textContent = 'Password must be at least 8 characters.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!/[A-Z]/.test(password)) {
+                errorDiv.textContent = 'Password must contain at least one uppercase letter.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!/[a-z]/.test(password)) {
+                errorDiv.textContent = 'Password must contain at least one lowercase letter.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!/[0-9]/.test(password)) {
+                errorDiv.textContent = 'Password must contain at least one number.';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              if (!/[@$!%*?&]/.test(password)) {
+                errorDiv.textContent = 'Password must contain at least one special character (@$!%*?&).';
+                errorDiv.style.display = 'block';
+                return;
+              }
+              
+              // Show loading state
+              submitBtn.disabled = true;
+              submitBtn.textContent = 'Registering...';
+              
+              try {
+                const res = await fetch(`${API_BASE}/api/auth/register`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({ email, password })
+                });
+                
+                let data;
+                const contentType = res.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                  data = await res.json();
+                } else {
+                  const text = await res.text();
+                  data = { error: text || 'Registration failed' };
+                }
+                
+                if (!res.ok) {
+                  throw new Error(data.error || 'Registration failed');
+                }
+                
+                // Store token
+                localStorage.setItem('authToken', data.token);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                
+                // Registration complete, redirect
+                window.location.href = 'index.html';
+              } catch (err) {
+                errorDiv.textContent = err.message || 'Registration failed. Please try again.';
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Register';
+              }
+            };
+          });
+
+          // Product display logic
+          async function loadProducts() {
+            try {
+              const res = await fetch('products.json');
+              const products = await res.json();
+              // Limit the number of products shown on the registration page so it scales gracefully
+              renderProducts(products.slice(0, 4));
+            } catch (err) {
+              document.getElementById('products-grid').innerHTML = '<div class="load-error">Failed to load products. Please try again later.</div>';
+            }
+          }
+          function renderProducts(products) {
+            const grid = document.getElementById('products-grid');
+            grid.innerHTML = '';
+            products.forEach(product => {
+              const card = document.createElement('div');
+              card.className = 'product-card register-product-card';
+              card.innerHTML = `
+                <img class="register-product-img" src="${product.image}" alt="${product.name}" />
+                <div class="register-product-title">${product.name}</div>
+                <div class="register-product-price">$${product.price.toFixed(2)}</div>
+              `;
+              grid.appendChild(card);
+            });
+          }
+          loadProducts();
+        </script>
+      </body>
+    </html>

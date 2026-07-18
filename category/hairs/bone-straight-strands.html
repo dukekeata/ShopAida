@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bone Straight Strands | ShopAida</title>
+  <meta name="description" content="Bone straight hair strands for sleek, polished looks. Shop straight bundles and weaves at ShopAida." />
+  <meta name="keywords" content="bone straight hair, straight bundles, ShopAida">
+  <link rel="canonical" href="https://example.com/category/hairs/bone-straight-strands.html">
+  <link rel="stylesheet" href="../../style.css">
+</head>
+<body>
+  <header>
+    <div class="navbar">
+      <div class="logo">ShopAida</div>
+      <nav>
+        <a href="../../categories.html">Categories</a>
+        <a href="../../index.html">Shop</a>
+      </nav>
+    </div>
+  </header>
+  <main style="max-width:1000px;margin:48px auto;">
+    <h1 style="color:var(--primary);">Bone Straight Strands</h1>
+    <p style="color:#555;font-size:1rem;">Sleek bone straight extensions for a polished, professional appearance — smooth texture and excellent manageability.</p>
+    <section id="products-grid" class="products-grid" style="margin-top:24px;"></section>
+  </main>
+  <footer class="footer-content">&copy; 2026 ShopAida</footer>
+  <script src="../../script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const res = await fetch('../../products.json');
+        const list = await res.json();
+        const filtered = list.filter(p => p.subcategory === 'Bone straight strands');
+        renderCategoryProducts(filtered);
+      } catch (e) {
+        document.getElementById('products-grid').innerHTML = '<div style="color:#e53935;font-weight:600;text-align:center;padding:32px;">Failed to load products.</div>';
+      }
+    });
+  </script>
+</body>
+</html>
