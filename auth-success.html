@@ -14,6 +14,7 @@
     <p style="color: var(--muted); font-size: 0.9rem;">You will be redirected shortly.</p>
   </div>
 
+  <script src="shared.js"></script>
   <script>
     // Extract token from URL params
     const params = new URLSearchParams(window.location.search);
@@ -33,7 +34,7 @@
       localStorage.setItem('authToken', token);
       
       // Fetch user info
-      const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+      const API_BASE = (window.ShopAida && window.ShopAida.API_BASE) || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? `${window.location.protocol}//${window.location.hostname}:3000` : window.location.origin);
       
       fetch(`${API_BASE}/api/auth/me`, {
         headers: { 'Authorization': `Bearer ${token}` },

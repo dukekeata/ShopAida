@@ -1,6 +1,6 @@
 /* exported updateQty, removeFromCart */
 // Load cart from localStorage and display items with images and prices
-const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+const API_BASE = (window.ShopAida && window.ShopAida.API_BASE) || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' ? `${window.location.protocol}//${window.location.hostname}:3000` : window.location.origin);
 
 function renderCart() {
   let cart = [];
@@ -118,7 +118,7 @@ async function createOrder(paymentMethod, paymentReference, shippingAddress) {
   const payload = {
     items: getCartItems(),
     amount: getCartTotal(),
-    currency: 'USD',
+    currency: 'NGN',
     paymentMethod,
     paymentReference,
     shippingAddress

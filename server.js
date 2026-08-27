@@ -80,14 +80,14 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:", "https:"],
-      connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "https://js.paystack.co", "https://*.paystack.co", "https://cdnjs.cloudflare.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
+      imgSrc: ["'self'", "data:", "https:", "https://images.unsplash.com"],
+      connectSrc: ["'self'", "https://api.stripe.com", "https://api.paystack.co", "https://*.paystack.co"],
+      fontSrc: ["'self'", "data:", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'none'"],
-      frameSrc: ["'none'"]
+      frameSrc: ["'self'", "https://js.stripe.com", "https://hooks.stripe.com", "https://checkout.paystack.com", "https://standard.paystack.co", "https://*.paystack.co"]
     }
   },
   hsts: {

@@ -308,7 +308,7 @@ function renderNewArrivalsGrid() {
     grid.innerHTML = '<div class="empty-state">No new arrivals are available right now. Please check back soon.</div>';
     return;
   }
-  const newest = products.slice().sort((a, b) => b.id - a.id).slice(0, 10);
+  const newest = products.slice().sort((a, b) => String(b.createdAt || b._id || b.id).localeCompare(String(a.createdAt || a._id || a.id))).slice(0, 10);
   grid.innerHTML = '';
 
   if (!newest.length) {
@@ -322,8 +322,9 @@ function renderNewArrivalsGrid() {
     const card = document.createElement('a');
     card.className = 'new-arrival-card';
     card.href = productUrl;
+    const imgSrc = (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) ? product.image : (getRootPath() + (product.image || 'images/placeholder.svg'));
     card.innerHTML = `
-      <img src="${getRootPath()}${product.image}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.src='${getRootPath()}images/placeholder.svg';" />
+      <img src="${imgSrc}" alt="${product.name}" loading="lazy" onerror="this.onerror=null;this.src='${getRootPath()}images/placeholder.svg';" />
       <div class="new-arrival-copy">
         <div class="new-arrival-name">${product.name}</div>
         <div class="new-arrival-meta">${product.category || 'New'} · ${window.ShopAida.formatCurrency(product.price)}</div>
@@ -349,9 +350,10 @@ function buildCarousel(items, opts = {}) {
     slide.className = 'carousel-slide';
     const slug = slugify(product.name);
     const productUrl = getRootPath() + `product/${product.id}-${slug}.html`;
+    const imgSrc = (product.image && (product.image.startsWith('http://') || product.image.startsWith('https://'))) ? product.image : (getRootPath() + (product.image || 'images/placeholder.svg'));
     slide.innerHTML = `
       <div class="product-card" role="listitem" tabindex="0">
-        <a href="${productUrl}"><img src="${getRootPath()}${product.image}" alt="${product.name}" class="product-img-frame" loading="lazy" onerror="this.onerror=null;this.src='${getRootPath()}images/placeholder.svg';" /></a>
+        <a href="${productUrl}"><img src="${imgSrc}" alt="${product.name}" class="product-img-frame" loading="lazy" onerror="this.onerror=null;this.src='${getRootPath()}images/placeholder.svg';" /></a>
         <div class="product-name"><a href="${productUrl}">${product.name}</a></div>
         <div class="product-sub">${product.category || ''}</div>
         <div class="product-price">${window.ShopAida.formatCurrency(product.price)}</div>
@@ -457,23 +459,25 @@ function renderHomeCarousels() {
       return;
     }
 
-    // New products (most recent IDs)
-    const newProducts = products.slice().sort((a,b) => b.id - a.id).slice(0,10);
+    // New products (most recent)
+    const newProducts = products.slice().sort((a,b) => String(b.createdAt || b._id || b.id).localeCompare(String(a.createdAt || a._id || a.id))).slice(0,10);
     try {
-      if (newEl) { newEl.innerHTML = ''; newEl.appendChild(buildCarousel(newProducts, { autoplay: true, interval: 3500 })); newEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${newProducts.length} new products</div>`); console.log('renderHomeCarousels: newProducts=', newProducts.length); }
+      if (newEl) { newEl.innerHTML = ''; newEl.appendChild(buildCarousel(newProducts, { autoplay: true, interval: 3500 })); newEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${newProducts.length} new products</div>`); }
 
-      // Discounts (price threshold - example heuristic)
-      const discounts = products.filter(p => p.price <= 25).slice(0,10);
-      if (discEl) { discEl.innerHTML = ''; if (discounts.length) { discEl.appendChild(buildCarousel(discounts, { autoplay: true, interval: 4200 })); discEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${discounts.length} discounted items</div>`);} else discEl.innerHTML = '<div class="empty-state"><i class="fas fa-tag" style="color:var(--muted);font-size:2.5rem;margin-bottom:12px;opacity:0.5;"></i><p style="color:var(--muted);font-size:1rem;margin:12px 0 0 0;">No discounts available at the moment.</p></div>' ; console.log('renderHomeCarousels: discounts=', discounts.length); }
+      // Discounts / Value picks (sorted by price ascending)
+      const discounts = products.slice().sort((a,b) => a.price - b.price).slice(0,10);
+      if (discEl) { discEl.innerHTML = ''; if (discounts.length) { discEl.appendChild(buildCarousel(discounts, { autoplay: true, interval: 4200 })); discEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${discounts.length} special offer items</div>`);} else discEl.innerHTML = '<div class="empty-state"><i class="fas fa-tag" style="color:var(--muted);font-size:2.5rem;margin-bottom:12px;opacity:0.5;"></i><p style="color:var(--muted);font-size:1rem;margin:12px 0 0 0;">No discounts available at the moment.</p></div>' ; }
 
-      // Featured collections (curated set)
+      // Featured collections (curated set matching string or originalId)
       const featuredIds = [13,14,15,1,5,12,9,11];
-      const featured = featuredIds.map(id => products.find(p => p.id === id)).filter(Boolean);
-      if (featEl) { featEl.innerHTML = ''; featEl.appendChild(buildCarousel(featured, { autoplay: true, interval: 3800 })); featEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${featured.length} featured items</div>`); console.log('renderHomeCarousels: featured=', featured.length); }
+      const featured = products.filter(p => featuredIds.some(fid => String(p.id) === String(fid) || String(p._id) === String(fid) || String(p.metadata?.originalId) === String(fid))).slice(0,10);
+      const featuredList = featured.length ? featured : products.slice(0, 8);
+      if (featEl) { featEl.innerHTML = ''; featEl.appendChild(buildCarousel(featuredList, { autoplay: true, interval: 3800 })); featEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${featuredList.length} featured items</div>`); }
 
-      // Seasonal campaigns (candles, diffusers, body mists)
-      const seasonal = products.filter(p => /candle|diffuser|body mist|mist/i.test(p.subcategory || '') ).slice(0,10);
-      if (seasEl) { seasEl.innerHTML = ''; if (seasonal.length) { seasEl.appendChild(buildCarousel(seasonal, { autoplay: true, interval: 4600 })); seasEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${seasonal.length} seasonal items</div>`);} else seasEl.innerHTML = '<div class="empty-state"><i class="fas fa-snowflake" style="color:var(--muted);font-size:2.5rem;margin-bottom:12px;opacity:0.5;"></i><p style="color:var(--muted);font-size:1rem;margin:12px 0 0 0;">No seasonal items currently available.</p></div>' ; console.log('renderHomeCarousels: seasonal=', seasonal.length); }
+      // Seasonal campaigns (candles, diffusers, body mists, fragrance)
+      const seasonal = products.filter(p => /candle|diffuser|body mist|mist|fragrance/i.test((p.subcategory || '') + ' ' + (p.category || '') + ' ' + (p.name || '')) ).slice(0,10);
+      const seasonalList = seasonal.length ? seasonal : products.slice(0, 8);
+      if (seasEl) { seasEl.innerHTML = ''; if (seasonalList.length) { seasEl.appendChild(buildCarousel(seasonalList, { autoplay: true, interval: 4600 })); seasEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">${seasonalList.length} seasonal items</div>`);} else seasEl.innerHTML = '<div class="empty-state"><i class="fas fa-snowflake" style="color:var(--muted);font-size:2.5rem;margin-bottom:12px;opacity:0.5;"></i><p style="color:var(--muted);font-size:1rem;margin:12px 0 0 0;">No seasonal items currently available.</p></div>' ; }
     } catch (err) {
       console.warn('renderHomeCarousels error', err);
       if (newEl) newEl.insertAdjacentHTML('beforeend', `<div class="carousel-status">Error: ${String(err.message || err)}</div>`);
