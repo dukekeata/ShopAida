@@ -72,8 +72,8 @@
             <div id="products-grid" class="products-grid register-products-grid"></div>
           </section>
         <script>
-          // API Base URL
-          const API_BASE = window.API_BASE || `${window.location.protocol}//${window.location.hostname}:3000`;
+          // Use ShopAida.API_BASE from shared.js (handles localhost vs production automatically)
+          const API_BASE = (window.ShopAida && window.ShopAida.API_BASE) || window.location.origin;
 
           // Registration logic
           document.addEventListener('DOMContentLoaded', function() {
