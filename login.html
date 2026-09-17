@@ -183,7 +183,7 @@
       } catch (err) {
         let errorMsg = err.message || 'Login failed. Please try again.';
         if (errorMsg.includes('Failed to fetch')) {
-          errorMsg = 'Cannot connect to backend server. Please make sure the server is running on port 3000.';
+          errorMsg = 'Unable to connect to server. If deployed on Render free tier, the server may be waking up (please wait 30 seconds and try again) or hard-refresh your browser tab (Ctrl+F5).';
         }
         errorDiv.textContent = errorMsg;
         errorDiv.style.display = 'block';

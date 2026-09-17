@@ -3,7 +3,7 @@ const ShopAida = (function() {
     window.location.protocol === 'file:'
       ? 'http://localhost:3000'
       : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-          ? `${window.location.protocol}//${window.location.hostname}:${window.location.port === '3000' ? '3000' : '3000'}`
+          ? (window.location.port === '5500' ? `${window.location.protocol}//${window.location.hostname}:3000` : window.location.origin)
           : window.location.origin)
   );
 
