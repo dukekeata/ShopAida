@@ -23,22 +23,22 @@ const validateRegister = [
   body('email')
     .isEmail()
     .withMessage('Must be a valid email address')
-    .normalizeEmail()
+    .normalizeEmail({ gmail_remove_dots: false })
     .trim(),
   body('password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/)
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9])/)
     .withMessage('Password must contain uppercase, lowercase, number, and special character'),
   body('firstName')
-    .optional()
+    .optional({ checkFalsy: true })
     .isLength({ min: 2 })
     .withMessage('First name must be at least 2 characters')
     .matches(/^[a-zA-Z\s'-]+$/)
     .withMessage('First name contains invalid characters')
     .trim(),
   body('lastName')
-    .optional()
+    .optional({ checkFalsy: true })
     .isLength({ min: 2 })
     .withMessage('Last name must be at least 2 characters')
     .matches(/^[a-zA-Z\s'-]+$/)
@@ -51,7 +51,7 @@ const validateLogin = [
   body('email')
     .isEmail()
     .withMessage('Must be a valid email address')
-    .normalizeEmail()
+    .normalizeEmail({ gmail_remove_dots: false })
     .trim(),
   body('password')
     .notEmpty()
@@ -63,7 +63,7 @@ const validateForgotPassword = [
   body('email')
     .isEmail()
     .withMessage('Must be a valid email address')
-    .normalizeEmail()
+    .normalizeEmail({ gmail_remove_dots: false })
     .trim(),
   handleValidationErrors
 ];
@@ -76,7 +76,7 @@ const validateResetPassword = [
   body('password')
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/)
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9])/)
     .withMessage('Password must contain uppercase, lowercase, number, and special character'),
   handleValidationErrors
 ];

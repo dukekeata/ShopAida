@@ -121,7 +121,7 @@
         return;
       }
 
-      if (!email.match(/^([a-zA-Z0-9_\.-]+)@([a-zA-Z0-9\.-]+)\.([a-zA-Z]{2,})$/)) {
+      if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
         errorDiv.textContent = 'Please enter a valid email address.';
         errorDiv.style.display = 'block';
         return;
@@ -161,7 +161,11 @@
         }
 
         if (!res.ok) {
-          throw new Error(data.error || 'Login failed');
+          let msg = data.error;
+          if (!msg && Array.isArray(data.details) && data.details.length > 0) {
+            msg = data.details.map(d => d.message).join('. ');
+          }
+          throw new Error(msg || 'Login failed');
         }
 
         // Store token
@@ -177,7 +181,11 @@
           window.location.href = 'index.html';
         }
       } catch (err) {
-        errorDiv.textContent = err.message || 'Login failed. Please try again.';
+        let errorMsg = err.message || 'Login failed. Please try again.';
+        if (errorMsg.includes('Failed to fetch')) {
+          errorMsg = 'Cannot connect to backend server. Please make sure the server is running on port 3000.';
+        }
+        errorDiv.textContent = errorMsg;
         errorDiv.style.display = 'block';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Login';

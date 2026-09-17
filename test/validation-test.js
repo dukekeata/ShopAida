@@ -16,20 +16,37 @@ function createMockRequest(bodyData = {}, queryData = {}, paramsData = {}) {
   };
 }
 
-async function runValidators(req, validators) {
+function createMockResponse() {
+  const res = {
+    statusCode: null,
+    jsonBody: null,
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(body) {
+      this.jsonBody = body;
+      return this;
+    }
+  };
+  return res;
+}
+
+async function runValidators(req, res, validators) {
   for (const validator of validators) {
-    await validator(req, {}, () => {});
+    await validator(req, res, () => {});
   }
   return validationResult(req);
 }
 
 async function assertValidation(name, validators, requestBody, shouldPass) {
   const req = createMockRequest(requestBody);
-  const result = await runValidators(req, validators);
+  const res = createMockResponse();
+  const result = await runValidators(req, res, validators);
   const passed = result.isEmpty();
-
-  console.log(`${passed ? '✓' : '✗'} ${name}`);
-  if (passed !== shouldPass) {
+  const assertionPassed = (passed === shouldPass);
+  console.log(`${assertionPassed ? '✓' : '✗'} ${name}`);
+  if (!assertionPassed) {
     console.error(`   Expected ${shouldPass ? 'pass' : 'fail'} but got ${passed ? 'pass' : 'fail'}`);
     if (!passed) {
       console.error('   Errors:', result.array());
@@ -46,6 +63,18 @@ async function assertValidation(name, validators, requestBody, shouldPass) {
     password: 'SecurePass123!',
     firstName: 'John',
     lastName: 'Doe'
+  }, true);
+
+  await assertValidation('Valid registration with hash special char', validateRegister, {
+    email: 'user@example.com',
+    password: 'SecurePass123#',
+    firstName: '',
+    lastName: ''
+  }, true);
+
+  await assertValidation('Valid registration with dash/dot special char', validateRegister, {
+    email: 'user+tag@example.com',
+    password: 'Secure-Pass.123'
   }, true);
 
   await assertValidation('Invalid email format', validateRegister, {

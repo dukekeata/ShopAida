@@ -83,7 +83,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https://js.stripe.com", "https://js.paystack.co", "https://*.paystack.co", "https://cdnjs.cloudflare.com"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com", "https://fonts.googleapis.com"],
       imgSrc: ["'self'", "data:", "https:", "https://images.unsplash.com"],
-      connectSrc: ["'self'", "https://api.stripe.com", "https://api.paystack.co", "https://*.paystack.co"],
+      connectSrc: ["'self'", "https:", "http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5500", "http://127.0.0.1:5500", "ws:", "wss:", "https://api.stripe.com", "https://api.paystack.co", "https://*.paystack.co"],
       fontSrc: ["'self'", "data:", "https://cdnjs.cloudflare.com", "https://fonts.gstatic.com"],
       objectSrc: ["'none'"],
       mediaSrc: ["'none'"],
@@ -262,23 +262,14 @@ const PORT = process.env.PORT || 3000;
     // Connect to database
     await connectDB();
   } catch (err) {
-    const isProd = process.env.NODE_ENV === 'production';
-    const allowNoDb = process.env.ALLOW_NO_DB === 'true' || !isProd;
-
-    if (!allowNoDb) {
-      console.error('❌ Failed to start server:', err.message);
-      process.exit(1);
-    }
-
-    console.warn('⚠️  Starting server without MongoDB');
+    console.warn('⚠️  MongoDB connection failed on startup:', err.message);
+    console.warn('⚠️  Server will continue running. Mongoose will retry connecting automatically.');
   }
 
-  if (process.env.NODE_ENV !== 'production') {
-    try {
-      await ensureDefaultAdmin();
-    } catch (err) {
-      console.warn('⚠️ Default admin setup failed:', err.message);
-    }
+  try {
+    await ensureDefaultAdmin();
+  } catch (err) {
+    console.warn('⚠️ Default admin setup failed:', err.message);
   }
 
   // Start server

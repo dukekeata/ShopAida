@@ -5,12 +5,9 @@ const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/shopaida';
     const options = {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
       maxPoolSize: parseInt(process.env.MONGODB_MAX_POOL_SIZE, 10) || 20,
-      serverSelectionTimeoutMS: 5000,
-      socketTimeoutMS: 45000,
-      family: 4
+      serverSelectionTimeoutMS: 10000,
+      socketTimeoutMS: 45000
     };
 
     await mongoose.connect(mongoUri, options);

@@ -54,7 +54,13 @@ router.post('/register', authLimiter, validateRegister, async (req, res, next) =
     const sanitizedEmail = sanitizeEmail(email);
 
     // Check if MongoDB is available
-    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+    const useMemoryStore = (memoryStore.isEnabled() || process.env.NODE_ENV !== 'production') && mongoose.connection.readyState !== 1;
+
+    if (mongoose.connection.readyState !== 1 && !useMemoryStore) {
+      return res.status(503).json({
+        error: 'Database connection currently unavailable. Please verify MONGODB_URI on Render environment variables and MongoDB Atlas IP Whitelist (0.0.0.0/0).'
+      });
+    }
 
     if (useMemoryStore) {
       // Use in-memory storage (development without MongoDB)
@@ -117,7 +123,13 @@ router.post('/login', authLimiter, validateLogin, async (req, res, next) => {
     const sanitizedEmail = sanitizeEmail(email);
 
     // Check if MongoDB is available
-    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+    const useMemoryStore = (memoryStore.isEnabled() || process.env.NODE_ENV !== 'production') && mongoose.connection.readyState !== 1;
+
+    if (mongoose.connection.readyState !== 1 && !useMemoryStore) {
+      return res.status(503).json({
+        error: 'Database connection currently unavailable. Please verify MONGODB_URI on Render environment variables and MongoDB Atlas IP Whitelist (0.0.0.0/0).'
+      });
+    }
 
     if (useMemoryStore) {
       // Use in-memory storage

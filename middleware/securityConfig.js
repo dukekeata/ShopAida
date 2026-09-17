@@ -7,7 +7,7 @@ module.exports = {
     requireLowercase: true,
     requireNumbers: true,
     requireSpecialChars: true,
-    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/
+    pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^a-zA-Z0-9])/
   },
 
   // Rate limiting configuration

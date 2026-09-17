@@ -30,6 +30,8 @@ function sanitizeString(str) {
   return sanitized;
 }
 
+const SENSITIVE_NO_SANITY_KEYS = ['password', 'confirmPassword', 'currentPassword', 'newPassword'];
+
 /**
  * Sanitize an object recursively
  * @param {object} obj - Object to sanitize
@@ -51,7 +53,11 @@ function sanitizeObject(obj) {
   if (typeof obj === 'object') {
     const sanitized = {};
     for (const [key, value] of Object.entries(obj)) {
-      sanitized[key] = sanitizeObject(value);
+      if (SENSITIVE_NO_SANITY_KEYS.includes(key)) {
+        sanitized[key] = typeof value === 'string' ? value.replace(/\0/g, '') : value;
+      } else {
+        sanitized[key] = sanitizeObject(value);
+      }
     }
     return sanitized;
   }
