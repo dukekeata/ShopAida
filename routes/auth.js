@@ -228,6 +228,11 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out successfully' });
 });
 
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const { sendPasswordResetEmail } = require('../utils/email');
+const { validateForgotPassword, validateResetPassword } = require('../middleware/validateRequest');
+
 // Current user
 router.get('/me', authMiddleware, async (req, res, next) => {
   try {
@@ -246,6 +251,120 @@ router.get('/me', authMiddleware, async (req, res, next) => {
       }
       res.json(user.toJSON());
     }
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Update Profile
+router.put('/me', authMiddleware, async (req, res, next) => {
+  try {
+    const { firstName, lastName, phone, address } = req.body;
+    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+
+    if (useMemoryStore) {
+      const user = await memoryStore.findUserById(req.user.userId);
+      if (!user) return res.status(404).json({ error: 'User not found' });
+      if (firstName !== undefined) user.firstName = firstName;
+      if (lastName !== undefined) user.lastName = lastName;
+      if (phone !== undefined) user.phone = phone;
+      if (address !== undefined) user.address = address;
+      return res.json({ message: 'Profile updated successfully', user: memoryStore.getUserData(user) });
+    }
+
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    await user.save();
+
+    res.json({ message: 'Profile updated successfully', user: user.toJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Forgot Password
+router.post('/forgot-password', validateForgotPassword, async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const sanitizedEmail = sanitizeEmail(email);
+
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const resetExpiry = new Date(Date.now() + 3600000); // 1 hour
+
+    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+
+    if (useMemoryStore) {
+      const user = await memoryStore.findUserByEmail(sanitizedEmail);
+      if (user) {
+        user.passwordResetToken = resetToken;
+        user.passwordResetExpiry = resetExpiry;
+      }
+    } else {
+      const user = await User.findOne({ email: sanitizedEmail });
+      if (user) {
+        user.passwordResetToken = resetToken;
+        user.passwordResetExpiry = resetExpiry;
+        await user.save();
+      }
+    }
+
+    const resetUrl = `${req.protocol}://${req.get('host')}/login.html?token=${resetToken}`;
+    await sendPasswordResetEmail(sanitizedEmail, resetToken, resetUrl);
+
+    res.json({
+      message: 'If an account with that email exists, a password reset email has been sent.',
+      resetToken // included in response for dev testing
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Reset Password
+router.post('/reset-password', validateResetPassword, async (req, res, next) => {
+  try {
+    const { token, password } = req.body;
+    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+
+    if (useMemoryStore) {
+      let foundUser = null;
+      for (const u of memoryStore.users.values()) {
+        if (u.passwordResetToken === token && u.passwordResetExpiry > new Date()) {
+          foundUser = u;
+          break;
+        }
+      }
+      if (!foundUser) {
+        return res.status(400).json({ error: 'Invalid or expired password reset token' });
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      foundUser.password = await bcrypt.hash(password, salt);
+      foundUser.passwordResetToken = undefined;
+      foundUser.passwordResetExpiry = undefined;
+
+      return res.json({ message: 'Password reset successfully. You can now log in with your new password.' });
+    }
+
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpiry: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'Invalid or expired password reset token' });
+    }
+
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpiry = undefined;
+    await user.save();
+
+    res.json({ message: 'Password reset successfully. You can now log in with your new password.' });
   } catch (err) {
     next(err);
   }

@@ -182,4 +182,70 @@ router.get('/products', adminMiddleware, validatePagination, async (req, res, ne
   }
 });
 
+// Manage Users
+router.get('/users', adminMiddleware, validatePagination, async (req, res, next) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(50, parseInt(req.query.limit) || 10);
+    const skip = (page - 1) * limit;
+    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+
+    let users = [];
+    let total = 0;
+
+    if (useMemoryStore) {
+      users = Array.from(memoryStore.users.values()).map(u => memoryStore.getUserData(u));
+      total = users.length;
+      users = users.slice(skip, skip + limit);
+    } else {
+      users = await User.find()
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+      total = await User.countDocuments();
+    }
+
+    res.json({
+      users,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.patch('/users/:userId/role', adminMiddleware, async (req, res, next) => {
+  try {
+    const { role } = req.body;
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({ error: 'Role must be user or admin' });
+    }
+
+    const { userId } = req.params;
+    const useMemoryStore = memoryStore.isEnabled() && mongoose.connection.readyState !== 1;
+
+    if (useMemoryStore) {
+      const u = await memoryStore.findUserById(userId);
+      if (!u) return res.status(404).json({ error: 'User not found' });
+      u.role = role;
+      return res.json({ message: 'Role updated successfully', user: memoryStore.getUserData(u) });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    user.role = role;
+    await user.save();
+
+    res.json({ message: 'Role updated successfully', user: user.toJSON() });
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;

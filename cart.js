@@ -202,7 +202,7 @@ async function initCheckout() {
     checkoutBtn.style.display = 'none';
     renderStripePayment();
     renderPaystackButton();
-    // renderPayPalButtons();
+    renderPayPalButtons();
   });
 
   function showMessage(msg, visible = true) {

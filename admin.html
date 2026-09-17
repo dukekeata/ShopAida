@@ -121,6 +121,24 @@
         </table>
       </div>
     </section>
+
+    <section style="margin-top:32px;">
+      <h2>Registered Users</h2>
+      <div class="table-container">
+        <table class="dashboard-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
     </section>
   </main>
 
@@ -407,12 +425,72 @@
       });
     }
 
+    async function loadUsers() {
+      const response = await fetch(`${API_BASE}/api/admin/users?limit=50`, {
+        headers: {
+          'Content-Type': 'application/json',
+          ...window.ShopAida.getAuthHeaders()
+        },
+        credentials: 'include'
+      });
+      if (!response.ok) throw new Error('Unable to load users.');
+      const data = await response.json();
+      return data.users || [];
+    }
+
+    function renderUsers(users) {
+      const tbody = document.querySelector('#usersTable tbody');
+      if (!tbody) return;
+      tbody.innerHTML = '';
+      if (!users || !users.length) {
+        tbody.innerHTML = '<tr><td colspan="5">No registered users found.</td></tr>';
+        return;
+      }
+
+      users.forEach(u => {
+        const row = document.createElement('tr');
+        const name = `${u.firstName || ''} ${u.lastName || ''}`.trim() || 'N/A';
+        const newRole = u.role === 'admin' ? 'user' : 'admin';
+        const btnText = u.role === 'admin' ? 'Make User' : 'Make Admin';
+        const btnStyle = u.role === 'admin' ? 'background:#757575;' : 'background:#114b8c;';
+
+        row.innerHTML = `
+          <td>${u.email}</td>
+          <td>${name}</td>
+          <td><strong>${u.role || 'user'}</strong></td>
+          <td>${formatDate(u.createdAt)}</td>
+          <td>
+            <button onclick="toggleUserRole('${u._id || u.id}', '${newRole}')" style="${btnStyle}color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">${btnText}</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    async function toggleUserRole(userId, newRole) {
+      if (!confirm(`Are you sure you want to change this user's role to ${newRole}?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/users/${userId}/role`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            ...window.ShopAida.getAuthHeaders()
+          },
+          body: JSON.stringify({ role: newRole })
+        });
+        if (!res.ok) throw new Error('Failed to update user role');
+        refreshDashboard();
+      } catch (err) {
+        alert(err.message);
+      }
+    }
+
     async function refreshDashboard() {
       const statusEl = document.getElementById('dashboardStatus');
       statusEl.textContent = 'Loading dashboard metrics...';
 
       try {
-        const [overviewData, activityData, productsData] = await Promise.all([loadOverview(), loadActivity(), loadAdminProducts()]);
+        const [overviewData, activityData, productsData, usersData] = await Promise.all([loadOverview(), loadActivity(), loadAdminProducts(), loadUsers()]);
 
         document.getElementById('overviewCards').innerHTML = `
           ${renderMetric('Products', overviewData.totalProducts, 'Active product catalog')}
@@ -426,6 +504,7 @@
         renderOrders(overviewData.recentOrders || []);
         renderActivity(activityData.attempts || []);
         renderProductsAdmin(productsData || []);
+        renderUsers(usersData || []);
         statusEl.textContent = 'Dashboard loaded successfully.';
       } catch (err) {
         statusEl.textContent = err.message;

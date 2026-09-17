@@ -193,6 +193,20 @@
     };
 
     // Forgot Password Modal Logic
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetToken = urlParams.get('token');
+
+    if (resetToken) {
+      document.getElementById('forgotPasswordModal').style.display = 'flex';
+      document.querySelector('.forgot-title').textContent = 'Set New Password';
+      document.querySelector('label[for="forgotEmail"]').textContent = 'New Password';
+      document.getElementById('forgotEmail').type = 'password';
+      document.getElementById('forgotEmail').placeholder = 'Enter new password (8+ chars)';
+      document.querySelector('label[for="securityAnswer"]').style.display = 'none';
+      document.getElementById('securityAnswer').style.display = 'none';
+      document.getElementById('resetPasswordBtn').textContent = 'Save New Password';
+    }
+
     document.getElementById('forgotPasswordLink').onclick = function (e) {
       e.preventDefault();
       document.getElementById('forgotPasswordModal').style.display = 'flex';
@@ -201,12 +215,30 @@
     // Social sign-in
     const redirectUrl = `${window.location.origin}/auth-success.html`;
 
-    document.getElementById('googleSignIn').onclick = function () {
-      window.location.href = `${API_BASE}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
+    document.getElementById('googleSignIn').onclick = async function () {
+      try {
+        const res = await fetch(`${API_BASE}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`, { redirect: 'manual' });
+        if (res.status === 500) {
+          alert('Google Sign-In is not configured yet. Please configure GOOGLE_CLIENT_ID on your server.');
+          return;
+        }
+        window.location.href = `${API_BASE}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
+      } catch (e) {
+        window.location.href = `${API_BASE}/auth/google?redirect=${encodeURIComponent(redirectUrl)}`;
+      }
     };
 
-    document.getElementById('facebookSignIn').onclick = function () {
-      window.location.href = `${API_BASE}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`;
+    document.getElementById('facebookSignIn').onclick = async function () {
+      try {
+        const res = await fetch(`${API_BASE}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`, { redirect: 'manual' });
+        if (res.status === 500) {
+          alert('Facebook Sign-In is not configured yet. Please configure FACEBOOK_APP_ID on your server.');
+          return;
+        }
+        window.location.href = `${API_BASE}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`;
+      } catch (e) {
+        window.location.href = `${API_BASE}/auth/facebook?redirect=${encodeURIComponent(redirectUrl)}`;
+      }
     };
 
     document.getElementById('appleSignIn').onclick = function () {
@@ -224,26 +256,56 @@
     };
 
     document.getElementById('resetPasswordBtn').onclick = async function () {
-      const email = document.getElementById('forgotEmail').value.trim();
+      const inputVal = document.getElementById('forgotEmail').value.trim();
       const errorDiv = document.getElementById('forgotError');
+      const btn = this;
       errorDiv.style.display = 'none';
 
-      if (!email) {
-        errorDiv.textContent = 'Please enter your email.';
+      if (!inputVal) {
+        errorDiv.textContent = resetToken ? 'Please enter a new password.' : 'Please enter your email.';
         errorDiv.style.display = 'block';
         return;
       }
 
-      if (!email.match(/^([a-zA-Z0-9_\.-]+)@([a-zA-Z0-9\.-]+)\.([a-zA-Z]{2,})$/)) {
-        errorDiv.textContent = 'Please enter a valid email address.';
-        errorDiv.style.display = 'block';
-        return;
-      }
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
 
-      // TODO: Implement password reset endpoint
-      errorDiv.style.color = '#888';
-      errorDiv.textContent = 'Password reset feature coming soon.';
-      errorDiv.style.display = 'block';
+      try {
+        if (resetToken) {
+          // Reset Password Mode
+          const res = await fetch(`${API_BASE}/api/auth/reset-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: resetToken, password: inputVal })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to reset password.');
+          errorDiv.style.color = '#2e7d32';
+          errorDiv.textContent = data.message || 'Password reset successfully! Redirecting...';
+          errorDiv.style.display = 'block';
+          setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+        } else {
+          // Request Reset Mode
+          const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: inputVal })
+          });
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.error || 'Failed to send reset link.');
+          errorDiv.style.color = '#2e7d32';
+          errorDiv.textContent = data.message || 'Reset instructions have been sent to your email.';
+          errorDiv.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Reset Password';
+        }
+      } catch (err) {
+        errorDiv.style.color = '#c62828';
+        errorDiv.textContent = err.message || 'An error occurred. Please try again.';
+        errorDiv.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = resetToken ? 'Save New Password' : 'Reset Password';
+      }
     };
   </script>
   <footer>

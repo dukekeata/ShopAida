@@ -71,7 +71,26 @@ const sendOrderDeclined = async (userEmail, orderId, reason = 'Payment declined'
   });
 };
 
+const sendPasswordResetEmail = async (userEmail, resetToken, resetUrl) => {
+  console.log(`🔑 PASSWORD RESET TOKEN for ${userEmail}: ${resetToken}`);
+  console.log(`🔗 RESET URL: ${resetUrl}`);
+
+  await sendEmail({
+    to: userEmail,
+    subject: 'Password Reset Request - ShopAida',
+    html: `
+      <h1>Password Reset Request</h1>
+      <p>You requested a password reset for your ShopAida account.</p>
+      <p>Click the link below or copy and paste it into your browser to reset your password (link expires in 1 hour):</p>
+      <p><a href="${resetUrl}" style="padding:10px 18px;background:#114b8c;color:#fff;text-decoration:none;border-radius:6px;display:inline-block;">Reset Password</a></p>
+      <p>Or use this token directly: <code>${resetToken}</code></p>
+      <p>If you did not request this, please ignore this email.</p>
+    `
+  });
+};
+
 module.exports = {
   sendOrderConfirmation,
-  sendOrderDeclined
+  sendOrderDeclined,
+  sendPasswordResetEmail
 };

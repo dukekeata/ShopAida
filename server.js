@@ -257,10 +257,13 @@ if (!process.env.JWT_SECRET) {
 
 const PORT = process.env.PORT || 3000;
 
+const { autoSeedIfNeeded } = require('./seed');
+
 (async () => {
   try {
     // Connect to database
     await connectDB();
+    await autoSeedIfNeeded();
   } catch (err) {
     console.warn('⚠️  MongoDB connection failed on startup:', err.message);
     console.warn('⚠️  Server will continue running. Mongoose will retry connecting automatically.');

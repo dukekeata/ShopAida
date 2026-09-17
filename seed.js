@@ -55,4 +55,42 @@ async function seedProducts() {
   }
 }
 
-seedProducts();
+async function autoSeedIfNeeded() {
+  try {
+    const count = await Product.countDocuments();
+    if (count > 0) return;
+
+    console.log('🌱 Database has 0 products. Auto-seeding initial catalog from products.json...');
+    const productsPath = path.join(__dirname, 'products.json');
+    if (!fs.existsSync(productsPath)) return;
+
+    const productsData = JSON.parse(fs.readFileSync(productsPath, 'utf8'));
+    const productsToInsert = productsData.map(p => ({
+      _id: new mongoose.Types.ObjectId(),
+      name: p.name,
+      description: p.description || '',
+      price: p.price,
+      currency: 'NGN',
+      category: p.category || 'General',
+      tags: p.subcategory ? [p.subcategory] : [],
+      images: p.image ? [p.image] : [],
+      stock: 100,
+      isActive: true,
+      metadata: { originalId: p.id }
+    }));
+
+    await Product.insertMany(productsToInsert);
+    console.log(`✅ Auto-seeded ${productsToInsert.length} products successfully`);
+  } catch (err) {
+    console.warn('⚠️ Auto-seeding failed:', err.message);
+  }
+}
+
+if (require.main === module) {
+  seedProducts();
+}
+
+module.exports = {
+  seedProducts,
+  autoSeedIfNeeded
+};
